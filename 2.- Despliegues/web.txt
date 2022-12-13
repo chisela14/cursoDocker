@@ -1,0 +1,4 @@
+Comando de creación:
+docker run -dit --name my-apache-app -p 8080:80 -v "$PWD":/usr/local/apache2/htdocs/ httpd:2.4
+URL de github Pages:
+https://chisela14.github.io/despliegueWeb/

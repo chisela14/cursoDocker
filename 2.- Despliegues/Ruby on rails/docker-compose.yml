@@ -1,0 +1,33 @@
+#indica la versión
+version: '2'
+
+#lista los servicios que se van a emplear
+services:
+  #el primer servicio es una base de datos mariadb
+  mariadb:
+    #la imagen necesaria para crear el contenedor de mariadb
+    image: docker.io/bitnami/mariadb:10.6
+    #lista las variables de entorno para este contenedor
+    environment:
+      #variable que permite usar una contraseña vacía, solo recomendable para desarrollo
+      - ALLOW_EMPTY_PASSWORD=yes
+  #el segundo servicio será nuestra aplicación, el framework rails
+  myapp:
+    #la imagen necesaria para crear el contenedor de rails
+    image: docker.io/bitnami/rails:7
+    #los puertos que se van a mapear, en nuestro caso aquí se cambia el 3000 por el 8001
+    ports:
+      - '8001:3000'
+    #lista las variables de entorno para este contenedor
+    environment:
+      #host de la base de datos, en nuestro caso mariadb
+      - DATABASE_HOST=mariadb
+      #nombre de la base de datos
+      - DATABASE_NAME=my_app_development
+    #lista de volúmenes del contenedor
+    volumes:
+      #el directorio donde se encuentra el proyecto y la aplicación de ruby en rails
+      - './my-project:/app'
+    #este servicio depende de mariadb, por lo que se debe iniciar después de mariadb
+    depends_on:
+      - mariadb

@@ -1,0 +1,58 @@
+version: '2' # Indica la versión
+# Lista los servicios necesarios para este contenedor
+services:
+  #El primer servicio es mariadb
+  mariadb:
+    # Imagen necesaria para crear el contenedor de mariadb
+    image: docker.io/bitnami/mariadb:10.6
+    # Lista las variables de entorno para mariadb
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      # Esta variable indica el usuario para conectarse a la base de datos
+      # En nuestro caso cambiamos el valor por defecto por "pepe"
+      - MARIADB_USER=pepe
+      # Añadimos esta variable de entorno para establecer la contraseña "pepe" para el usuario
+      - MARIADB_PASSWORD=pepe
+      # Indica el nombre de la base de datos que se utilizará, en este caso "mitienda"
+      - MARIADB_DATABASE=mitienda
+    # Lista de volúmenes que usará este contenedor (uno en este caso)
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+  # El segundo servicio es prestashop
+  prestashop:
+    # Imagen necesaria para crear este contenedor
+    image: docker.io/bitnami/prestashop:8
+    # Lista de puertos que se van a mapear
+    ports:
+      - '80:8080'
+      - '443:8443'
+    # Lista las variables de entorno para prestashop 
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      # Host de prestshop
+      - PRESTASHOP_HOST=localhost
+      # Host de la base de datos de prestashop
+      - PRESTASHOP_DATABASE_HOST=mariadb
+      # Puerto que va a usar la base de datos de prestashop
+      - PRESTASHOP_DATABASE_PORT_NUMBER=3306
+      # Usuario de la base de datos que va a usar prestashop
+      - PRESTASHOP_DATABASE_USER=pepe
+      # Contraseña del usuario de la base de datos que va a usar prestashop
+      - PRESTASHOP_DATABASE_PASSWORD=pepe
+      # Nombre de la base de datos que va a usar prestashop
+      - PRESTASHOP_DATABASE_NAME=mitienda
+    # Lista de volúmenes que usará este contenedor (uno en este caso)
+    volumes:
+      - 'prestashop_data:/bitnami/prestashop'
+    # Lista de contenedores de los que depende, por lo que debe arrancarse después de ellos
+    depends_on:
+      - mariadb
+# Lista de volúmenes de este contenedor
+volumes:
+  # Usa el driver local para manejar los volúmenes
+  mariadb_data:
+    driver: local
+  prestashop_data:
+    driver: local
