@@ -1,19 +1,41 @@
-version: '3.1'
-
+version: '3.1' #Indica la versión
+#Lista de los servicios necesarios para este contenedor
 services:
-  joomla:
+  #El primer servicio es joomla
+  joomla: 
+    #Imagen utilizada para crear este contenedor
     image: joomla
-    restart: always
+    #Enlaces que necesita este contenedor
     links:
-      - joomladb:mysql
+      #En este caso una base de datos, el siguiente servicio
+      - joomladb:mysql 
+    #Lista de puertos a mapear
     ports:
-      - 8080:80
+      - 8080:80 #Utiliza el puerto 8080
+    #Lista de volúmenes que va a utilizar
+    volumes:
+      #Elegimos la carpeta que vamos a redireccionar a /var/www/html, donde apache guarda los archivos web
+      #en este caso el mismo directorio que tenga el docker-compose
+      - "./:/var/www/html" 
+    #Lista de variables de entorno
     environment:
+      #Host para la base de datos, en este caso el siguiente servicio
       JOOMLA_DB_HOST: joomladb
+      #Contraseña para la base de datos
       JOOMLA_DB_PASSWORD: despJoomla
-
+  #El segundo servicio es la base de datos para Joomla
   joomladb:
+    #Imagen utilizada para crear este contenedor
     image: mysql:5.6
-    restart: always
+    #Lista de puertos a mapear
+    ports:
+      - 3306 #Abrimos el puerto 3306 para la base de datos
+    #Lista de volúmenes que va a utilizar
+    volumes:
+      #Elegimos la carpeta que va a guardar los datos de la base de datos
+      #en este caso vamos a guardar todo nuestro proyecto en la misma carpeta, con los datos en la subcarpeta data
+      - "./data:/var/lib/mysql"
+    #Lista de variables de entorno
     environment:
+      #Contraseña para el usuario root de la base de datos
       MYSQL_ROOT_PASSWORD: despJoomla
